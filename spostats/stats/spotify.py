@@ -25,7 +25,7 @@ class SpotifyClient:
         refresh_token = getattr(self.token, "token_secret", None) or (self.token.token_secret) \
                         or (self.token.extra_data or {}).get("refresh_token")
         if not refresh_token:
-            return  # первый логин мог не вернуть refresh_token
+            return  # the first login could not return a refresh_token
         data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
@@ -36,7 +36,7 @@ class SpotifyClient:
         r.raise_for_status()
         payload = r.json()
         self.token.token = payload["access_token"]
-        # Spotify может вернуть новый refresh_token — сохраняем
+        # Spotify may return a new refresh_token — save it
         if "refresh_token" in payload:
             self.token.token_secret = payload["refresh_token"]
         if "expires_in" in payload:
@@ -50,13 +50,13 @@ class SpotifyClient:
     def get(self, path, params=None):
         r = requests.get(f"{SPOTIFY_API}{path}", headers=self._headers(), params=params or {}, timeout=15)
         if r.status_code == 401:
-            # на всякий случай — пробуем раз обновить и повторить
+            # just in case - we try to update one more time and repeat
             self._refresh_token()
             r = requests.get(f"{SPOTIFY_API}{path}", headers=self._headers(), params=params or {}, timeout=15)
         r.raise_for_status()
         return r.json()
 
-    # Удобные методы:
+    # Useful methods:
     def me(self):
         return self.get("/me")
 
