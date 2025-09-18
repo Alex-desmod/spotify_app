@@ -1,0 +1,10 @@
+{% extends "stats/base.html" %}
+
+{% block title %}Heatmap{% endblock %}
+
+{% block content %}
+    <h2>Listening Heatmap</h2>
+
+    <pre>{{ data|safe }}</pre>
+    <!-- now just a dictionary, later there will be a nice visualization -->
+{% endblock %}

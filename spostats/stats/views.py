@@ -13,52 +13,102 @@ def _require_spotify(user):
         return False
     return True
 
+def _top_items(request, item_type="tracks"):
+    client = SpotifyClient(request.user)
+
+    # short_term by default
+    time_range = request.GET.get("range", "short_term")
+    show_all = request.GET.get("show") == "all"
+
+    try:
+        data = client.top_items(item_type=item_type, time_range=time_range, limit=50)
+    except Exception:
+        return redirect("account_login")
+
+    items = []
+    for obj in data.get("items", []):
+        if item_type == "tracks":
+            items.append({
+                "name": obj["name"],
+                "artist": ", ".join([a["name"] for a in obj["artists"]]),
+                "album_cover": obj["album"]["images"][1]["url"] if obj["album"]["images"] else None,
+            })
+        else:  # artists
+            items.append({
+                "name": obj["name"],
+                "genres": ", ".join(obj.get("genres", [])),
+                "image": obj["images"][1]["url"] if obj.get("images") else None,
+            })
+
+    context = {
+        "item_type": item_type,
+        "time_range": time_range,
+        "items": items[:50],  # на всякий случай ограничим
+        "show_all": show_all,
+    }
+    return render(request, f"stats/top_{item_type}.html", context)
 
 @login_required
 def dashboard(request):
-    if not _require_spotify(request.user):
-        return redirect("/accounts/spotify/login/")
     client = SpotifyClient(request.user)
-    profile = Profile.objects.get(user=request.user)
-    top_tracks = client.top_items("tracks", "short_term", 10)["items"]
-    recent = client.recently_played(limit=10)["items"]
-    return render(request, "stats/dashboard.html", {
-        "profile": profile,
-        "top_tracks": top_tracks,
-        "recent": recent,
-    })
+
+    try:
+        data = client.recently_played(limit=50)
+    except Exception:
+        # if something's wrong (for example the token is lost) → redirect to login
+        return redirect("account_login")
+
+    recent_tracks = []
+    for item in data.get("items", []):
+        track = item["track"]
+        recent_tracks.append({
+            "name": track["name"],
+            "artist": ", ".join([a["name"] for a in track["artists"]]),
+            "album_cover": track["album"]["images"][1]["url"] if track["album"]["images"] else None,
+            "played_at": item["played_at"],
+        })
+
+    return render(request, "stats/dashboard.html", {"recent_tracks": recent_tracks})
 
 @login_required
 def top_tracks(request):
-    rng = request.GET.get("range", "short_term")
-    client = SpotifyClient(request.user)
-    data = client.top_items("tracks", rng, 20)["items"]
-    return render(request, "stats/top_tracks.html", {"items": data, "rng": rng})
+    return _top_items(request, item_type="tracks")
 
 @login_required
 def top_artists(request):
-    rng = request.GET.get("range", "short_term")
-    client = SpotifyClient(request.user)
-    data = client.top_items("artists", rng, 20)["items"]
-    return render(request, "stats/top_artists.html", {"items": data, "rng": rng})
+    return _top_items(request, item_type="artists")
 
 @login_required
-def recent(request):
+def genre_cloud(request):
     client = SpotifyClient(request.user)
-    data = client.recently_played(limit=50)["items"]
-    return render(request, "stats/recent.html", {"items": data})
 
-@login_required
-def genres(request):
-    client = SpotifyClient(request.user)
-    artists = client.top_items("artists", "short_term", 50)["items"]
-    counts = Counter()
-    for a in artists:
-        for g in a.get("genres", []):
-            counts[g] += 1
-    # list (genre, weight) for our genres cloud
-    items = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:100]
-    return render(request, "stats/genres.html", {"genres": items})
+    try:
+        data = client.top_items(item_type="artists", time_range="long_term", limit=50)
+    except Exception:
+        return redirect("account_login")
+
+    genres = []
+    for artist in data.get("items", []):
+        genres.extend(artist.get("genres", []))
+
+    counter = Counter(genres).most_common(50)  # list of (genre, count)
+
+    # Size normalization in px range
+    min_size, max_size = 12, 36
+    genres_with_size = []
+    if counter:
+        counts = [c for _, c in counter]
+        min_c, max_c = min(counts), max(counts)
+        for genre, cnt in counter:
+            if max_c == min_c:
+                size = (min_size + max_size) // 2
+            else:
+                # linear normalization
+                size = int(min_size + (cnt - min_c) * (max_size - min_size) / (max_c - min_c))
+            genres_with_size.append({"name": genre, "count": cnt, "size": size})
+    # if empty, genres_with_size is left empty
+
+    return render(request, "stats/genre_cloud.html", {"genres": genres_with_size})
 
 @login_required
 def heatmap(request):

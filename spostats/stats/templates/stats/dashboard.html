@@ -1,0 +1,45 @@
+{% extends "stats/base.html" %}
+
+{% block title %}Recently Played{% endblock %}
+
+{% block content %}
+    <h2>Recently Played Tracks</h2>
+
+    <ul class="list-group mb-3">
+        {% for track in recent_tracks|slice:":10" %}
+            <li class="list-group-item d-flex align-items-center">
+                {% if track.album_cover %}
+                    <img src="{{ track.album_cover }}" alt="cover" width="50" class="me-3">
+                {% endif %}
+                <div>
+                    <strong>{{ track.name }}</strong><br>
+                    <small>{{ track.artist }}</small>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No recent tracks found.</li>
+        {% endfor %}
+    </ul>
+
+    {% if recent_tracks|length > 10 %}
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#moreTracks">
+            Show more
+        </button>
+
+        <div class="collapse mt-3" id="moreTracks">
+            <ul class="list-group">
+                {% for track in recent_tracks|slice:"10:50" %}
+                    <li class="list-group-item d-flex align-items-center">
+                        {% if track.album_cover %}
+                            <img src="{{ track.album_cover }}" alt="cover" width="50" class="me-3">
+                        {% endif %}
+                        <div>
+                            <strong>{{ track.name }}</strong><br>
+                            <small>{{ track.artist }}</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
