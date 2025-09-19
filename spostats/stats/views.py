@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.db.models.functions import TruncDate
+from django.contrib import messages
 from .spotify import SpotifyClient
 from .models import Play, Profile
+from .forms import ProfileForm
 from collections import Counter
 
 def _require_spotify(user):
@@ -126,3 +128,16 @@ def heatmap(request):
     data = {row["day"].isoformat(): row["count"] for row in qs}
 
     return render(request, "stats/heatmap.html", {"data": data})
+
+@login_required
+def profile_view(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully ✅")
+            return redirect("account_profile")
+    else:
+        form = ProfileForm(instance=request.user)
+
+    return render(request, "account/profile.html", {"form": form})

@@ -7,7 +7,7 @@
 
     <ul class="list-group mb-3">
         {% for track in recent_tracks|slice:":10" %}
-            <li class="list-group-item d-flex align-items-center">
+            <li class="list-group-item bg-dark text-light d-flex align-items-center">
                 {% if track.album_cover %}
                     <img src="{{ track.album_cover }}" alt="cover" width="50" class="me-3">
                 {% endif %}
@@ -22,14 +22,14 @@
     </ul>
 
     {% if recent_tracks|length > 10 %}
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#moreTracks">
+        <button class="btn btn-custom" type="button" data-bs-toggle="collapse" data-bs-target="#moreTracks">
             Show more
         </button>
 
         <div class="collapse mt-3" id="moreTracks">
             <ul class="list-group">
                 {% for track in recent_tracks|slice:"10:50" %}
-                    <li class="list-group-item d-flex align-items-center">
+                    <li class="list-group-item bg-dark text-light d-flex align-items-center">
                         {% if track.album_cover %}
                             <img src="{{ track.album_cover }}" alt="cover" width="50" class="me-3">
                         {% endif %}

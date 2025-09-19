@@ -6,15 +6,15 @@
 
 <!-- Period switch buttons -->
 <div class="btn-group mb-3" role="group">
-    <a class="btn btn-outline-primary {% if time_range == 'short_term' %}active{% endif %}" href="?range=short_term">4 weeks</a>
-    <a class="btn btn-outline-primary {% if time_range == 'medium_term' %}active{% endif %}" href="?range=medium_term">6 months</a>
-    <a class="btn btn-outline-primary {% if time_range == 'long_term' %}active{% endif %}" href="?range=long_term">All time</a>
+    <a class="btn btn-custom {% if time_range == 'short_term' %}active{% endif %}" href="?range=short_term">4 weeks</a>
+    <a class="btn btn-custom {% if time_range == 'medium_term' %}active{% endif %}" href="?range=medium_term">6 months</a>
+    <a class="btn btn-custom {% if time_range == 'long_term' %}active{% endif %}" href="?range=long_term">All time</a>
 </div>
 
 <!-- Artist list -->
 <ul class="list-group mb-3">
     {% for artist in items|slice:":10" %}
-        <li class="list-group-item d-flex align-items-center">
+        <li class="list-group-item bg-dark text-light d-flex align-items-center">
             {% if artist.image %}
                 <img src="{{ artist.image }}" class="img-fluid rounded-circle me-3" style="max-width: 50px;" alt="artist">
             {% endif %}
@@ -29,11 +29,11 @@
 
 <!-- Show More button -->
 {% if items|length > 10 and not show_all %}
-    <a class="btn btn-primary" href="?range={{ time_range }}&show=all">Show more</a>
+    <a class="btn btn-custom" href="?range={{ time_range }}&show=all">Show more</a>
 {% elif show_all %}
     <ul class="list-group">
         {% for artist in items|slice:"10:50" %}
-            <li class="list-group-item d-flex align-items-center">
+            <li class="list-group-item bg-dark text-light d-flex align-items-center">
                 {% if artist.image %}
                     <img src="{{ artist.image }}" class="img-fluid rounded-circle me-3" style="max-width: 50px;" alt="artist">
                 {% endif %}

@@ -13,8 +13,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: #121212;
-            color: #e0e0e0;
         }
         main {
             flex: 1;
@@ -24,55 +22,32 @@
             height: 80px;
             object-fit: cover;
         }
-        .sidebar {
-            background-color: #1e1e1e !important;
-        }
-        .sidebar a {
-            color: #e0e0e0;
-        }
-        .sidebar a:hover {
-            background-color: #333;
-            color: #fff;
-        }
-        .btn-custom {
-            background-color: #222;   /* как у сайдбара */
-            color: #fff;
-            border: 1px solid #444;
-        }
-        .btn-custom:hover {
-        background-color: #333;
-        border-color: #555;
-        }
     </style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row">
         <!-- Burger menue for phones -->
-        <div class="col-12 d-md-none bg-dark p-2">
-            <button class="btn btn-outline-light"
+        <div class="col-12 d-md-none bg-light p-2">
+            <button class="btn btn-outline-primary"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#sidebarMenu"
                     aria-controls="sidebarMenu"
                     aria-expanded="false"
                     aria-label="Toggle navigation">
-                ☰ Menu
+                ☰
             </button>
         </div>
 
         <!-- Sidebar -->
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 sidebar collapse d-md-block p-3">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 bg-light sidebar collapse d-md-block p-3">
             <h5 class="mb-3">
                 Welcome,
                 {% if user.socialaccount_set.first.extra_data.display_name %}
-                    <a href="{% url 'account_profile' %}" class="text-decoration-none text-light">
-                        {{ user.socialaccount_set.first.extra_data.display_name }}
-                    </a>
+                    {{ user.socialaccount_set.first.extra_data.display_name }}
                 {% else %}
-                    <a href="{% url 'account_profile' %}" class="text-decoration-none text-light">
-                        {{ user.username }}
-                    </a>
+                    {{ user.username }}
                 {% endif %}
             </h5>
             {% if user.socialaccount_set.first %}
@@ -100,7 +75,7 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Auto shrink the menue
+    // Автоматически сворачиваем меню на мобильных после клика
     document.querySelectorAll('#sidebarMenu .nav-link').forEach(link => {
         link.addEventListener('click', () => {
             const sidebar = document.getElementById('sidebarMenu');
