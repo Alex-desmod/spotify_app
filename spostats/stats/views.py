@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.contrib import messages
+
 from .spotify import SpotifyClient
 from .models import Play, Profile
 from .forms import ProfileForm
 from collections import Counter
+
 
 def _require_spotify(user):
     # if no connected Spotify account - forward to login

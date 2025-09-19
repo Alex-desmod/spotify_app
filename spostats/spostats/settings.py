@@ -158,3 +158,9 @@ SOCIALACCOUNT_PROVIDERS = {
         # optional "AUTH_PARAMS": {"show_dialog": "true"},
     }
 }
+
+# allauth: email instead username
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_UNIQUE_EMAIL = True

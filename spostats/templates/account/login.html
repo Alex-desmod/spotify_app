@@ -1,15 +1,25 @@
 {% extends "stats/base.html" %}
-{% load i18n %}
+{% load socialaccount %}  {# нужно для {% provider_login_url %} #}
 
 {% block content %}
 <div class="container mt-5">
     <div class="card bg-dark text-light p-4 shadow-lg">
         <h2 class="mb-4">Login</h2>
+
+        <!-- Spotify button -->
+        <div class="social-login mb-4 text-center">
+            <a href="{% provider_login_url 'spotify' %}" class="btn btn-success w-100">
+                Continue with Spotify
+            </a>
+        </div>
+
+        <!-- Login form (email + password) -->
         <form method="post" action="{% url 'account_login' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-custom w-100">Log in</button>
         </form>
+
         <div class="mt-3">
             <a href="{% url 'account_reset_password' %}" class="text-light">Forgot password?</a>
         </div>
