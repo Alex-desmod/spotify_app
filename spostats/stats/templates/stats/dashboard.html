@@ -21,8 +21,10 @@
         {% endfor %}
     </ul>
 
+    <!-- Show More/Less button -->
     {% if recent_tracks|length > 10 %}
-        <button class="btn btn-custom" type="button" data-bs-toggle="collapse" data-bs-target="#moreTracks">
+        <button class="btn btn-custom" data-bs-target="#moreTracks" data-bs-toggle="collapse" id="toggleButton"
+                type="button">
             Show more
         </button>
 
@@ -41,5 +43,18 @@
                 {% endfor %}
             </ul>
         </div>
+
+        <script>
+            const toggleButton = document.getElementById('toggleButton');
+            const moreTracks = document.getElementById('moreTracks');
+
+            moreTracks.addEventListener('shown.bs.collapse', () => {
+                toggleButton.textContent = "Show less";
+            });
+
+            moreTracks.addEventListener('hidden.bs.collapse', () => {
+                toggleButton.textContent = "Show more";
+            });
+        </script>
     {% endif %}
 {% endblock %}

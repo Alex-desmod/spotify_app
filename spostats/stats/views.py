@@ -1,7 +1,7 @@
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.db.models.functions import TruncDate
 from django.contrib import messages
 
 from .spotify import SpotifyClient
@@ -115,21 +115,24 @@ def genre_cloud(request):
     return render(request, "stats/genre_cloud.html", {"genres": genres_with_size})
 
 @login_required
-def heatmap(request):
-    # counting a number of Plays per day right in SQL
-    qs = (
-        Play.objects
-        .filter(user=request.user)
-        .annotate(day=TruncDate("played_at"))   # cutting time, leaving date only
+def heatmap_view(request):
+    # taking all plays of the current user
+    plays = (
+        Play.objects.filter(user=request.user)
+        .extra(select={'day': "date(played_at)"})
         .values("day")
-        .annotate(count=Count("id"))           # number of Plays per day
+        .annotate(count=Count("id"))
         .order_by("day")
     )
 
-    # trasforming QuerySet in a dictionary { "YYYY-MM-DD": count }
-    data = {row["day"].isoformat(): row["count"] for row in qs}
+    # cal-heatmap waits this format: {timestamp: count}
+    # timestamp = Unix epoch (UTC)
+    data = {}
+    for p in plays:
+        ts = int(p["day"].strftime("%s"))  # UNIX timestamp
+        data[ts] = p["count"]
 
-    return render(request, "stats/heatmap.html", {"data": data})
+    return render(request, "stats/heatmap.html", {"heatmap_data": json.dumps(data)})
 
 @login_required
 def profile_view(request):

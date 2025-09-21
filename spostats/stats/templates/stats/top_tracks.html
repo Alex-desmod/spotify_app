@@ -2,38 +2,18 @@
 {% block title %}Top Tracks{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Top Tracks</h2>
+    <h2 class="mb-4">Top Tracks</h2>
 
-<!-- Period switch buttons -->
-<div class="btn-group mb-3" role="group">
-    <a class="btn btn-custom {% if time_range == 'short_term' %}active{% endif %}" href="?range=short_term">4 weeks</a>
-    <a class="btn btn-custom {% if time_range == 'medium_term' %}active{% endif %}" href="?range=medium_term">6 months</a>
-    <a class="btn btn-custom {% if time_range == 'long_term' %}active{% endif %}" href="?range=long_term">All time</a>
-</div>
+    <!-- Period switch buttons -->
+    <div class="btn-group mb-3" role="group">
+        <a class="btn btn-custom {% if time_range == 'short_term' %}active{% endif %}" href="?range=short_term">4 weeks</a>
+        <a class="btn btn-custom {% if time_range == 'medium_term' %}active{% endif %}" href="?range=medium_term">6 months</a>
+        <a class="btn btn-custom {% if time_range == 'long_term' %}active{% endif %}" href="?range=long_term">All time</a>
+    </div>
 
-<!-- Track list -->
-<ul class="list-group mb-3">
-    {% for track in items|slice:":10" %}
-        <li class="list-group-item bg-dark text-light d-flex align-items-center">
-            {% if track.album_cover %}
-                <img src="{{ track.album_cover }}" class="img-fluid me-3" style="max-width: 50px;" alt="cover">
-            {% endif %}
-            <div>
-                <strong>{{ track.name }}</strong><br>
-                <small class="text-light">{{ track.artist }}</small>
-            </div>
-        </li>
-    {% empty %}
-        <li class="list-group-item">No data found.</li>
-    {% endfor %}
-</ul>
-
-<!-- Show More button -->
-{% if items|length > 10 and not show_all %}
-    <a class="btn btn-custom" href="?range={{ time_range }}&show=all">Show more</a>
-{% elif show_all %}
-    <ul class="list-group">
-        {% for track in items|slice:"10:50" %}
+    <!-- Track list -->
+    <ul class="list-group mb-3">
+        {% for track in items|slice:":10" %}
             <li class="list-group-item bg-dark text-light d-flex align-items-center">
                 {% if track.album_cover %}
                     <img src="{{ track.album_cover }}" class="img-fluid me-3" style="max-width: 50px;" alt="cover">
@@ -43,7 +23,46 @@
                     <small class="text-light">{{ track.artist }}</small>
                 </div>
             </li>
+        {% empty %}
+            <li class="list-group-item">No data found.</li>
         {% endfor %}
     </ul>
-{% endif %}
+
+    <!-- Show More/Less button -->
+    {% if items|length > 10 %}
+        <button class="btn btn-custom" data-bs-target="#moreTracks" data-bs-toggle="collapse" id="toggleButton"
+                type="button">
+            Show more
+        </button>
+
+        <div class="collapse mt-3" id="moreTracks">
+            <ul class="list-group">
+                {% for track in items|slice:"10:50" %}
+                    <li class="list-group-item bg-dark text-light d-flex align-items-center">
+                        {% if track.album_cover %}
+                            <img alt="cover" class="img-fluid me-3" src="{{ track.album_cover }}"
+                                 style="max-width: 50px;">
+                        {% endif %}
+                        <div>
+                            <strong>{{ track.name }}</strong><br>
+                            <small class="text-light">{{ track.artist }}</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <script>
+            const toggleButton = document.getElementById('toggleButton');
+            const moreTracks = document.getElementById('moreTracks');
+
+            moreTracks.addEventListener('shown.bs.collapse', () => {
+                toggleButton.textContent = "Show less";
+            });
+
+            moreTracks.addEventListener('hidden.bs.collapse', () => {
+                toggleButton.textContent = "Show more";
+            });
+        </script>
+    {% endif %}
 {% endblock %}
