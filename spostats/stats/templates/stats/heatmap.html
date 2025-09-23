@@ -7,22 +7,42 @@
     </div>
 </div>
 
-<!-- cal-heatmap -->
-<script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 
-<script>
-    const cal = new CalHeatmap();
-    cal.paint({
-        itemSelector: "#cal-heatmap",
-        range: 12, // show 12 months
-        domain: "month",
-        subDomain: "day",
-        data: {{ heatmap_data|safe }},
-        start: new Date(new Date().getFullYear(), 0, 1), // from beginning of the current year
-        cellSize: 15,
-        legend: [1, 3, 5, 10, 20],
-        theme: "dark",
-    });
-</script>
+<!-- cal-heatmap -->
+<script type="module">
+    import CalHeatmap from "https://esm.sh/cal-heatmap";
+    import Legend from "https://esm.sh/cal-heatmap/dist/plugins/Legend.esm.js";
+
+    async function initHeatmap() {
+      try {
+        const response = await fetch("/heatmap-data/");
+        const heatmapData = await response.json();
+        console.log("Fetched data:", heatmapData);
+
+        const cal = new CalHeatmap();
+
+        cal.paint({
+          itemSelector: "#cal-heatmap",
+          domain: "month",
+          subDomain: "day",
+          range: 6,
+          data: {
+            source: heatmapData,
+          },
+          cellSize: 18,
+          theme: "dark",
+          plugins: [
+            [Legend, {
+              items: [1, 5, 10, 20],
+              position: "bottom",
+            }],
+          ],
+        });
+      } catch (err) {
+        console.error("Heatmap init failed:", err);
+      }
+    }
+
+    initHeatmap();
+  </script>
 {% endblock %}

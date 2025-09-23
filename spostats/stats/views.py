@@ -1,8 +1,11 @@
 import json
+import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.contrib import messages
+from django.db.models.functions import TruncDate
+from django.http import JsonResponse
 
 from .spotify import SpotifyClient
 from .models import Play, Profile
@@ -116,10 +119,14 @@ def genre_cloud(request):
 
 @login_required
 def heatmap_view(request):
+    return render(request, "stats/heatmap.html")
+
+@login_required
+def heatmap_data(request):
     # taking all plays of the current user
     plays = (
         Play.objects.filter(user=request.user)
-        .extra(select={'day': "date(played_at)"})
+        .annotate(day=TruncDate("played_at"))
         .values("day")
         .annotate(count=Count("id"))
         .order_by("day")
@@ -129,10 +136,10 @@ def heatmap_view(request):
     # timestamp = Unix epoch (UTC)
     data = {}
     for p in plays:
-        ts = int(p["day"].strftime("%s"))  # UNIX timestamp
+        ts = int(datetime.datetime.combine(p["day"], datetime.time.min).timestamp()) * 1000
         data[ts] = p["count"]
 
-    return render(request, "stats/heatmap.html", {"heatmap_data": json.dumps(data)})
+    return JsonResponse(data)
 
 @login_required
 def profile_view(request):
