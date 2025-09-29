@@ -1,5 +1,19 @@
 {% extends "stats/base.html" %}
 {% block content %}
+<style>
+    body {
+        background:#222;
+        color:#eee;
+        font-family:sans-serif;
+    }
+    #cal-heatmap {
+        margin:40px;
+        width:600px;
+        height:200px;
+        border:1px solid #444;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="card bg-dark text-light p-4 shadow-lg">
         <h2 class="mb-4">Listening Heatmap</h2>
@@ -7,42 +21,32 @@
     </div>
 </div>
 
+<!-- d3 v3 + cal-heatmap v3 -->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cal-heatmap/3.6.2/cal-heatmap.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cal-heatmap/3.6.2/cal-heatmap.min.js"></script>
 
-<!-- cal-heatmap -->
-<script type="module">
-    import CalHeatmap from "https://esm.sh/cal-heatmap";
-    import Legend from "https://esm.sh/cal-heatmap/dist/plugins/Legend.esm.js";
+<script>
+(async function(){
+  const resp = await fetch("{% url 'heatmap-data' %}", { credentials: 'same-origin' });
+  const dataSec = await resp.json();  // твоя вьюха уже отдает секунды
 
-    async function initHeatmap() {
-      try {
-        const response = await fetch("/heatmap-data/");
-        const heatmapData = await response.json();
-        console.log("Fetched data:", heatmapData);
-
-        const cal = new CalHeatmap();
-
-        cal.paint({
-          itemSelector: "#cal-heatmap",
-          domain: "month",
-          subDomain: "day",
-          range: 6,
-          data: {
-            source: heatmapData,
-          },
-          cellSize: 18,
-          theme: "dark",
-          plugins: [
-            [Legend, {
-              items: [1, 5, 10, 20],
-              position: "bottom",
-            }],
-          ],
-        });
-      } catch (err) {
-        console.error("Heatmap init failed:", err);
-      }
-    }
-
-    initHeatmap();
-  </script>
+  var cal = new CalHeatMap();
+  cal.init({
+    itemSelector: "#cal-heatmap",
+    domain: "month",
+    subDomain: "day",
+    range: 6,
+    cellSize: 18,
+    data: dataSec,
+    legend: [1, 5, 10, 20],
+    legendColors: {
+      min: "#222",
+      max: "#4caf50"
+    },
+    tooltip: true
+  });
+})();
+</script>
 {% endblock %}

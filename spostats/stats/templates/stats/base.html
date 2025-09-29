@@ -35,13 +35,17 @@
             color: #fff;
         }
         .btn-custom {
-            background-color: #222;   /* как у сайдбара */
+            background-color: #1e1e1e;
             color: #fff;
             border: 1px solid #444;
         }
         .btn-custom:hover {
         background-color: #333;
         border-color: #555;
+        }
+        .list-group-item {
+        background-color: #1e1e1e !important;
+        border-color: #555 !important;
         }
     </style>
 </head>
@@ -85,7 +89,6 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'top_tracks' %}">Top Tracks</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'top_artists' %}">Top Artists</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'genre_cloud' %}">Genre Cloud</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'heatmap' %}">Heatmap</a></li>
             </ul>
         </nav>
 

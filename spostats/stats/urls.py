@@ -6,7 +6,7 @@ urlpatterns = [
     path("top-tracks/", views.top_tracks, name="top_tracks"),
     path("top-artists/", views.top_artists, name="top_artists"),
     path("genre-cloud/", views.genre_cloud, name="genre_cloud"),
-    path("heatmap/", views.heatmap_view, name="heatmap"),
-    path("heatmap-data/", views.heatmap_data, name="heatmap-data"),
+    #path("heatmap/", views.heatmap_view, name="heatmap"),
+    #path("heatmap-data/", views.heatmap_data, name="heatmap-data"),
     path("profile/", views.profile_view, name="account_profile"),
 ]

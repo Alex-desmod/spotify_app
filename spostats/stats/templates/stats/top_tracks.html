@@ -19,7 +19,7 @@
                     <img src="{{ track.album_cover }}" class="img-fluid me-3" style="max-width: 50px;" alt="cover">
                 {% endif %}
                 <div>
-                    <strong>{{ track.name }}</strong><br>
+                    <strong>{{ track.name }}</strong> <small>({{ track.year }})</small><br>
                     <small class="text-light">{{ track.artist }}</small>
                 </div>
             </li>
@@ -44,7 +44,7 @@
                                  style="max-width: 50px;">
                         {% endif %}
                         <div>
-                            <strong>{{ track.name }}</strong><br>
+                            <strong>{{ track.name }}</strong> <small>({{ track.year }})</small><br>
                             <small class="text-light">{{ track.artist }}</small>
                         </div>
                     </li>

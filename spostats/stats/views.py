@@ -37,6 +37,7 @@ def _top_items(request, item_type="tracks"):
         if item_type == "tracks":
             items.append({
                 "name": obj["name"],
+                "year": obj["album"]["release_date"][:4],
                 "artist": ", ".join([a["name"] for a in obj["artists"]]),
                 "album_cover": obj["album"]["images"][1]["url"] if obj["album"]["images"] else None,
             })
@@ -50,7 +51,7 @@ def _top_items(request, item_type="tracks"):
     context = {
         "item_type": item_type,
         "time_range": time_range,
-        "items": items[:50],  # на всякий случай ограничим
+        "items": items[:50],  # limit just in case
         "show_all": show_all,
     }
     return render(request, f"stats/top_{item_type}.html", context)
@@ -70,6 +71,7 @@ def dashboard(request):
         track = item["track"]
         recent_tracks.append({
             "name": track["name"],
+            "year": track["album"]["release_date"][:4],
             "artist": ", ".join([a["name"] for a in track["artists"]]),
             "album_cover": track["album"]["images"][1]["url"] if track["album"]["images"] else None,
             "played_at": item["played_at"],
@@ -117,29 +119,29 @@ def genre_cloud(request):
 
     return render(request, "stats/genre_cloud.html", {"genres": genres_with_size})
 
-@login_required
-def heatmap_view(request):
-    return render(request, "stats/heatmap.html")
+# @login_required
+# def heatmap_view(request):
+#     return render(request, "stats/heatmap.html")
 
-@login_required
-def heatmap_data(request):
-    # taking all plays of the current user
-    plays = (
-        Play.objects.filter(user=request.user)
-        .annotate(day=TruncDate("played_at"))
-        .values("day")
-        .annotate(count=Count("id"))
-        .order_by("day")
-    )
-
-    # cal-heatmap waits this format: {timestamp: count}
-    # timestamp = Unix epoch (UTC)
-    data = {}
-    for p in plays:
-        ts = int(datetime.datetime.combine(p["day"], datetime.time.min).timestamp()) * 1000
-        data[ts] = p["count"]
-
-    return JsonResponse(data)
+# @login_required
+# def heatmap_data(request):
+#     # taking all plays of the current user
+#     plays = (
+#         Play.objects.filter(user=request.user)
+#         .annotate(day=TruncDate("played_at"))
+#         .values("day")
+#         .annotate(count=Count("id"))
+#         .order_by("day")
+#     )
+#
+#     # cal-heatmap waits this format: {timestamp: count}
+#     # timestamp = Unix epoch (UTC)
+#     data = {}
+#     for p in plays:
+#         ts = int(datetime.datetime.combine(p["day"], datetime.time.min).timestamp())
+#         data[ts] = p["count"]
+#
+#     return JsonResponse(data)
 
 @login_required
 def profile_view(request):
