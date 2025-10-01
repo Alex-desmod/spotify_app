@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,6 +92,11 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'top_artists' %}">Top Artists</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'genre_cloud' %}">Genre Cloud</a></li>
             </ul>
+
+            <!-- static logo -->
+            <div class="mt-5 text-center">
+                <img src="{% static 'images/goose.png' %}" alt="Goose" width="100">
+            </div>
         </nav>
 
         <!-- Main content -->
