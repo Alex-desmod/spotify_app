@@ -44,9 +44,10 @@ def _top_items(request, item_type="tracks"):
         else:  # artists
             items.append({
                 "name": obj["name"],
+                "id": obj["id"],
                 "genres": ", ".join(obj.get("genres", [])),
                 "image": obj["images"][1]["url"] if obj.get("images") else None,
-            })
+                })
 
     context = {
         "item_type": item_type,
@@ -119,30 +120,6 @@ def genre_cloud(request):
 
     return render(request, "stats/genre_cloud.html", {"genres": genres_with_size})
 
-# @login_required
-# def heatmap_view(request):
-#     return render(request, "stats/heatmap.html")
-
-# @login_required
-# def heatmap_data(request):
-#     # taking all plays of the current user
-#     plays = (
-#         Play.objects.filter(user=request.user)
-#         .annotate(day=TruncDate("played_at"))
-#         .values("day")
-#         .annotate(count=Count("id"))
-#         .order_by("day")
-#     )
-#
-#     # cal-heatmap waits this format: {timestamp: count}
-#     # timestamp = Unix epoch (UTC)
-#     data = {}
-#     for p in plays:
-#         ts = int(datetime.datetime.combine(p["day"], datetime.time.min).timestamp())
-#         data[ts] = p["count"]
-#
-#     return JsonResponse(data)
-
 @login_required
 def profile_view(request):
     if request.method == "POST":
@@ -155,3 +132,9 @@ def profile_view(request):
         form = ProfileForm(instance=request.user)
 
     return render(request, "account/profile.html", {"form": form})
+
+@login_required
+def artist_detail(request, artist_id):
+    client = SpotifyClient(request.user)
+    artist = client.get(f"/artists/{artist_id}")
+    return JsonResponse(artist)
