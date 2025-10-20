@@ -24,6 +24,8 @@ class SpotifyClient:
             self.token = None
 
     def _ensure_token(self):
+        if not self.token or not self.token.token:
+            return  # if no token — return quietly
         # refresh 5 minutes before the token expires
         if self.token.expires_at and self.token.expires_at <= timezone.now() + timedelta(minutes=5):
             self._refresh_token()
