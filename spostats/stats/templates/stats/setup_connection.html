@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h2>Setting up your Spotify connection...</h2>
+    <p>Please wait a moment.</p>
+</div>
+
+<script>
+    // Redirecting to the dashboard after 2 seconds
+    setTimeout(() => {
+        window.location.href = "{% url 'dashboard' %}";
+    }, 2000);
+</script>
+{% endblock %}

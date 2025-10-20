@@ -11,8 +11,17 @@ SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 class SpotifyClient:
     def __init__(self, user):
         self.user = user
-        self.account = SocialAccount.objects.get(user=user, provider="spotify")
-        self.token = SocialToken.objects.get(account=self.account)
+        try:
+            self.account = SocialAccount.objects.get(user=user, provider="spotify")
+        except SocialAccount.DoesNotExist:
+            self.account = None
+            self.token = None
+            return
+
+        try:
+            self.token = SocialToken.objects.get(account=self.account)
+        except SocialToken.DoesNotExist:
+            self.token = None
 
     def _ensure_token(self):
         # refresh 5 minutes before the token expires

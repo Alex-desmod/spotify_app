@@ -1,24 +1,13 @@
-import json
-import datetime
+from allauth.socialaccount.models import SocialAccount
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
 from django.contrib import messages
-from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 
 from .spotify import SpotifyClient
-from .models import Play, Profile
 from .forms import ProfileForm
 from collections import Counter
 
-
-def _require_spotify(user):
-    # if no connected Spotify account - forward to login
-    from allauth.socialaccount.models import SocialAccount
-    if not SocialAccount.objects.filter(user=user, provider="spotify").exists():
-        return False
-    return True
 
 def _top_items(request, item_type="tracks"):
     client = SpotifyClient(request.user)
@@ -56,6 +45,18 @@ def _top_items(request, item_type="tracks"):
         "show_all": show_all,
     }
     return render(request, f"stats/top_{item_type}.html", context)
+
+@login_required
+def spotify_setup(request):
+    # Check if Spotify is connected
+    has_spotify = SocialAccount.objects.filter(user=request.user, provider='spotify').exists()
+
+    if has_spotify:
+        # Alright, go to the dashboard
+        return redirect('dashboard')
+
+    # if Spotify is not connected — show the waiting page
+    return render(request, "stats/setup_connection.html")
 
 @login_required
 def dashboard(request):

@@ -137,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # for allauth
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = "/"   # where to redirect after successful login
+LOGIN_REDIRECT_URL = "/setup-connection/"   # where to redirect after successful login
 LOGOUT_REDIRECT_URL = "/"  # where to redirect after logout
 
 AUTHENTICATION_BACKENDS = [
