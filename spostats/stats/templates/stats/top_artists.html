@@ -25,7 +25,7 @@
             </div>
         </li>
     {% empty %}
-        <li class="list-group-item">No data found.</li>
+        <li class="list-group-item text-light">No data found.</li>
     {% endfor %}
 </ul>
 
@@ -56,26 +56,26 @@
 
 <!-- Bootstrap Modal -->
 <div class="modal fade" id="artistModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-light">
-      <div class="modal-header">
-        <h5 class="modal-title" id="artistName"></h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body text-center">
-        <img id="artistImage" class="img-fluid rounded mb-3" style="max-height:200px;">
-        <p><strong>Genres:</strong> <span id="artistGenres"></span></p>
-        <p><strong>Followers:</strong> <span id="artistFollowers"></span></p>
-        <p><strong>Popularity:</strong> <span id="artistPopularity">–</span>/100</p>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="artistName"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="artistImage" class="img-fluid rounded mb-3" style="max-height:200px;">
+                <p><strong>Genres:</strong> <span id="artistGenres"></span></p>
+                <p><strong>Followers:</strong> <span id="artistFollowers"></span></p>
+                <p><strong>Popularity:</strong> <span id="artistPopularity">–</span>/100</p>
 
-        <div class="progress mt-2" style="height: 8px;">
-          <div id="artistPopularityBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                <div class="progress mt-2" style="height: 8px;">
+                    <div id="artistPopularityBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                </div>
+
+                <a id="artistSpotifyLink" target="_blank" class="btn btn-custom mt-3">Open in Spotify</a>
+            </div>
         </div>
-
-        <a id="artistSpotifyLink" target="_blank" class="btn btn-custom mt-3">Open in Spotify</a>
-      </div>
     </div>
-  </div>
 </div>
 
 {% endblock %}

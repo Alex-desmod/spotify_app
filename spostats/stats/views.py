@@ -94,7 +94,7 @@ def genre_cloud(request):
     client = SpotifyClient(request.user)
 
     try:
-        data = client.top_items(item_type="artists", time_range="long_term", limit=50)
+        data = client.top_items(item_type="artists", time_range="medium_term", limit=50)
     except Exception:
         return redirect("account_login")
 
@@ -105,7 +105,7 @@ def genre_cloud(request):
     counter = Counter(genres).most_common(50)  # list of (genre, count)
 
     # Size normalization in px range
-    min_size, max_size = 12, 36
+    min_size, max_size = 12, 42
     genres_with_size = []
     if counter:
         counts = [c for _, c in counter]
@@ -139,3 +139,18 @@ def artist_detail(request, artist_id):
     client = SpotifyClient(request.user)
     artist = client.get(f"/artists/{artist_id}")
     return JsonResponse(artist)
+
+@login_required
+def my_gigs(request):
+    profile = request.user.profile
+    gigs = profile.gigs.order_by("-date")
+    return render(request, "stats/my_gigs.html", {"gigs": gigs})
+
+@login_required
+def add_gig(request):
+    return render(request, "stats/add_gig.html")
+
+@login_required
+def import_setlistfm(request):
+    return render(request, "stats/import_setlistfm.html")
+

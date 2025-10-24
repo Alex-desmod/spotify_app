@@ -21,3 +21,20 @@ class Play(models.Model):
     class Meta:
         unique_together = [("user", "spotify_track_id", "played_at")]
         ordering = ["-played_at"]
+
+class Gig(models.Model):
+    date = models.DateField()
+    artist_name = models.CharField(max_length=255)
+    venue = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    url = models.URLField(blank=True)
+
+    # many-to-many
+    attendees = models.ManyToManyField(Profile, related_name="gigs", blank=True)
+
+    class Meta:
+        ordering = ["-date"]
+        verbose_name = "Gig"
+        verbose_name_plural = "Gigs"
+        unique_together = [("date", "artist_name", "venue", "city", "country")]
