@@ -1,13 +1,23 @@
+import os
+import requests
+
 from allauth.socialaccount.models import SocialAccount
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 
+from .models import Gig
 from .spotify import SpotifyClient
 from .forms import ProfileForm
-from collections import Counter
 
+from datetime import datetime
+from collections import Counter
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SETLISTFM_API_KEY = os.getenv("SETLISTFM_API_KEY")
 
 def _top_items(request, item_type="tracks"):
     client = SpotifyClient(request.user)
@@ -143,7 +153,7 @@ def artist_detail(request, artist_id):
 @login_required
 def my_gigs(request):
     profile = request.user.profile
-    gigs = profile.gigs.order_by("-date")
+    gigs = profile.gigs.order_by("-event_date")
     return render(request, "stats/my_gigs.html", {"gigs": gigs})
 
 @login_required
@@ -152,5 +162,76 @@ def add_gig(request):
 
 @login_required
 def import_setlistfm(request):
-    return render(request, "stats/import_setlistfm.html")
+    if request.method == "POST":
+        username = request.POST.get("setlistfm_username")
+        headers = {
+            "x-api-key": SETLISTFM_API_KEY,
+            "Accept": "application/json",
+        }
+
+        all_gigs = []
+        page = 1
+
+        while True:
+            url = f"https://api.setlist.fm/rest/1.0/user/{username}/attended?p={page}"
+            response = requests.get(url, headers=headers)
+
+            # API error — incorrect username or something else
+            if response.status_code != 200:
+                break
+
+            data = response.json()
+            setlists = data.get("setlist", [])
+
+            # no pages left
+            if not setlists:
+                break
+
+            all_gigs.extend(setlists)
+            page += 1
+
+            # just in case - to avoid an infinite cycle
+            if page > 50:
+                break
+
+        if not all_gigs:
+            return render(
+                request,
+                "stats/my_gigs.html",
+                {"error_message": "No gigs found or wrong username"},
+            )
+
+        # saving gigs in the DB
+        profile = request.user.profile
+        for s in all_gigs:
+            event_id = s.get("id")
+            event_date_str = s.get("eventDate")
+            artist_name = s.get("artist", {}).get("name")
+            venue = s.get("venue", {}).get("name", "")
+            city = s.get("venue", {}).get("city", {}).get("name", "")
+            country = s.get("venue", {}).get("city", {}).get("country", {}).get("name", "")
+            url = s.get("url", "")
+
+            # converting date from "DD-MM-YYYY" to the datetime format
+            try:
+                event_date = datetime.strptime(event_date_str, "%d-%m-%Y").date()
+            except Exception:
+                event_date = None
+
+            # if the gig exists — adding the user to the attendees
+            gig, created = Gig.objects.get_or_create(
+                event_id=event_id,
+                defaults={
+                    "event_date": event_date,
+                    "artist_name": artist_name or "Unknown artist",
+                    "venue": venue,
+                    "city": city,
+                    "country": country,
+                    "url": url,
+                },
+            )
+
+            gig.attendees.add(profile)
+
+    return redirect("my_gigs")
 

@@ -7,7 +7,9 @@
 
 <div class="mb-4">
     <a href="{% url 'add_gig' %}" class="btn btn-custom">Add manually</a>
-    <a href="{% url 'import_setlistfm' %}" class="btn btn-success">Import from Setlist.fm</a>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#setlistfmModal">
+        Import from Setlist.fm
+    </button>
 </div>
 
 <!-- Gigs list -->
@@ -15,8 +17,8 @@
     {% for gig in gigs|slice:":10" %}
         <li class="list-group-item bg-dark text-light d-flex align-items-center">
             <div>
-                <small>{{ gig.date|date:"F j, Y" }}</small>
-                <strong>{{ gig.artist }}</strong><br>
+                <small>{{ gig.event_date|date:"F j, Y" }}</small>
+                <strong>{{ gig.artist_name }}</strong><br>
                 <small>{{ gig.venue }}, {{ gig.city }}</small><br>
             </div>
         </li>
@@ -26,7 +28,7 @@
 </ul>
 
 <!-- Show More/Less button -->
-{% if items|length > 10 %}
+{% if gigs|length > 10 %}
     <button class="btn btn-custom" data-bs-target="#moreGigs" data-bs-toggle="collapse" data-toggle-button
                 type="button">
         Show more
@@ -37,8 +39,8 @@
             {% for gig in gigs|slice:"10:" %}
                 <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
                     <div>
-                        <small>{{ gig.date|date:"F j, Y" }}</small>
-                        <strong>{{ gig.artist }}</strong><br>
+                        <small>{{ gig.event_date|date:"F j, Y" }}</small>
+                        <strong>{{ gig.artist_name }}</strong><br>
                         <small>{{ gig.venue }}, {{ gig.city }}</small><br>
                     </div>
                 </li>
@@ -46,4 +48,32 @@
         </ul>
     </div>
 {% endif %}
+
+<!-- Setlist.fm modal -->
+<div class="modal fade" id="setlistfmModal" tabindex="-1" aria-labelledby="setlistfmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="setlistfmModalLabel">Setlist.fm Authorization</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                {% if error_message %}
+                    <div class="alert alert-danger">{{ error_message }}</div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'import_setlistfm' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="setlistfm_username" class="form-label">Setlist.fm username</label>
+                        <input type="text" class="form-control" id="setlistfm_username" name="setlistfm_username" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

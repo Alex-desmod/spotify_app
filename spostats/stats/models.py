@@ -23,7 +23,8 @@ class Play(models.Model):
         ordering = ["-played_at"]
 
 class Gig(models.Model):
-    date = models.DateField()
+    event_id = models.CharField(max_length=50, blank=True)
+    event_date = models.DateField()
     artist_name = models.CharField(max_length=255)
     venue = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255)
@@ -34,7 +35,7 @@ class Gig(models.Model):
     attendees = models.ManyToManyField(Profile, related_name="gigs", blank=True)
 
     class Meta:
-        ordering = ["-date"]
+        ordering = ["-event_date"]
         verbose_name = "Gig"
         verbose_name_plural = "Gigs"
-        unique_together = [("date", "artist_name", "venue", "city", "country")]
+        unique_together = [("event_date", "artist_name", "venue", "city", "country")]
