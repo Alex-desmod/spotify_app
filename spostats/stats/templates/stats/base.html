@@ -86,12 +86,12 @@
                      class="img-fluid rounded-circle mb-3 avatar"
                      alt="avatar">
             {% endif %}
-            <ul class="nav flex-column mb-5">
-                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Recently Played</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'top_tracks' %}">Top Tracks</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'top_artists' %}">Top Artists</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'my_gigs' %}">My Gigs</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'genre_cloud' %}">Genre Cloud</a></li>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><h5>Recently Played</h5></a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'top_tracks' %}"><h5>Top Tracks</h5></a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'top_artists' %}"><h5>Top Artists</h5></a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'my_gigs' %}"><h5>My Gigs</h5></a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'genre_cloud' %}"><h5>Genre Cloud</h5></a></li>
             </ul>
 
             <!-- static logo -->

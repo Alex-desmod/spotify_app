@@ -210,10 +210,11 @@ def import_setlistfm(request):
                 break
 
         if not all_gigs:
+            gigs = request.user.profile.gigs.all().order_by("-event_date")
             return render(
                 request,
                 "stats/my_gigs.html",
-                {"error_message": "No gigs found or wrong username"},
+                {"error_message": "No gigs found or wrong username", "gigs": gigs},
             )
 
         # saving gigs in the DB
