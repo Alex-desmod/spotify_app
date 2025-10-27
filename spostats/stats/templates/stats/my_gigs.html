@@ -6,20 +6,47 @@
 <h2 class="mb-4">My Gigs</h2>
 
 <div class="mb-4">
-    <a href="{% url 'add_gig' %}" class="btn btn-custom">Add manually</a>
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#setlistfmModal">
-        Import from Setlist.fm
+    <button type="button" class="btn btn-custom mb-3" data-bs-toggle="modal" data-bs-target="#addGigModal">
+        add manually
+    </button>
+    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#setlistfmModal">
+        import from Setlist.fm
     </button>
 </div>
 
 <!-- Gigs list -->
 <ul class="list-group mb-3">
     {% for gig in gigs|slice:":10" %}
-        <li class="list-group-item bg-dark text-light d-flex align-items-center">
-            <div>
-                <small>{{ gig.event_date|date:"F j, Y" }}</small>
+        <li class="list-group-item bg-dark text-light d-flex align-items-center justify-content-between">
+            <div class="col-1 small">
+                {{ gig.event_date|date:"j M"|upper }}<br>
+                {{ gig.event_date|date:"Y"|upper }}
+            </div>
+
+            <div class="col-6">
                 <strong>{{ gig.artist_name }}</strong><br>
-                <small>{{ gig.venue }}, {{ gig.city }}</small><br>
+                <small>{{ gig.venue }}{% if gig.venue %}, {% endif %}{{ gig.city }}, {{ gig.country }}</small>
+            </div>
+
+            <div class="col-3 text-end">
+                {% if gig.url %}
+                    <a href="{{ gig.url }}" class="btn btn-outline-light btn-sm" target="_blank">
+                        view on Setlist.fm
+                    </a>
+                {% endif %}
+                <button
+                    class="btn btn-outline-secondary btn-sm ms-2 edit-gig-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editGigModal"
+                    data-id="{{ gig.id }}"
+                    data-artist="{{ gig.artist_name }}"
+                    data-venue="{{ gig.venue }}"
+                    data-city="{{ gig.city }}"
+                    data-country="{{ gig.country }}"
+                    data-date="{{ gig.event_date|date:'Y-m-d' }}"
+                >
+                    edit
+                </button>
             </div>
         </li>
     {% empty %}
@@ -31,17 +58,42 @@
 {% if gigs|length > 10 %}
     <button class="btn btn-custom" data-bs-target="#moreGigs" data-bs-toggle="collapse" data-toggle-button
                 type="button">
-        Show more
+        more
     </button>
 
     <div class="collapse mt-3" id="moreGigs">
         <ul class="list-group list-group-flush">
             {% for gig in gigs|slice:"10:" %}
                 <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
-                    <div>
-                        <small>{{ gig.event_date|date:"F j, Y" }}</small>
+                    <div class="col-1 small">
+                        {{ gig.event_date|date:"j M"|upper }}<br>
+                        {{ gig.event_date|date:"Y"|upper }}
+                    </div>
+
+                    <div class="col-6">
                         <strong>{{ gig.artist_name }}</strong><br>
-                        <small>{{ gig.venue }}, {{ gig.city }}</small><br>
+                        <small>{{ gig.venue }}{% if gig.venue %}, {% endif %}{{ gig.city }}, {{ gig.country }}</small>
+                    </div>
+
+                    <div class="col-3 text-end">
+                        {% if gig.url %}
+                            <a href="{{ gig.url }}" class="btn btn-outline-light btn-sm" target="_blank">
+                            View on Setlist.fm
+                            </a>
+                        {% endif %}
+                        <button
+                            class="btn btn-outline-secondary btn-sm ms-2 edit-gig-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editGigModal"
+                            data-id="{{ gig.id }}"
+                            data-artist="{{ gig.artist_name }}"
+                            data-venue="{{ gig.venue }}"
+                            data-city="{{ gig.city }}"
+                            data-country="{{ gig.country }}"
+                            data-date="{{ gig.event_date|date:'Y-m-d' }}"
+                        >
+                        edit
+                        </button>
                     </div>
                 </li>
             {% endfor %}
@@ -72,6 +124,100 @@
                     <button type="submit" class="btn btn-success w-100">Submit</button>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- edit gig modal -->
+<div class="modal fade" id="editGigModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Gig</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="editGigForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="gig_id" name="gig_id">
+
+                    <div class="mb-3">
+                        <label class="form-label">Artist</label>
+                        <input type="text" class="form-control" id="artist_name" name="artist_name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Venue</label>
+                        <input type="text" class="form-control" id="venue" name="venue">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-control" id="country" name="country">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="event_date" name="event_date">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">Save</button>
+                        <button type="button" id="deleteGig" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add gig Modal -->
+<div class="modal fade" id="addGigModal" tabindex="-1" aria-labelledby="addGigModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGigModalLabel">Add New Gig</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addGigForm">
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="addDate" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="addDate" name="date" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="addArtist" class="form-label">Artist</label>
+                    <input type="text" class="form-control" id="addArtist" name="artist" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="addVenue" class="form-label">Venue</label>
+                    <input type="text" class="form-control" id="addVenue" name="venue">
+                </div>
+
+                <div class="mb-3">
+                    <label for="addCity" class="form-label">City</label>
+                    <input type="text" class="form-control" id="addCity" name="city">
+                </div>
+
+                <div class="mb-3">
+                    <label for="addCountry" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="addCountry" name="country">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+                <button type="submit" class="btn btn-success">add gig</button>
+            </div>
+            </form>
         </div>
     </div>
 </div>

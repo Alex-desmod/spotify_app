@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (target) {
             target.addEventListener("shown.bs.collapse", () => {
-                button.textContent = "Show less";
+                button.textContent = "less";
             });
 
             target.addEventListener("hidden.bs.collapse", () => {
-                button.textContent = "Show more";
+                button.textContent = "more";
             });
         }
     });

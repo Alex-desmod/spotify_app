@@ -1,8 +1,9 @@
 import os
 import requests
+import json
 
 from allauth.socialaccount.models import SocialAccount
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
@@ -158,7 +159,21 @@ def my_gigs(request):
 
 @login_required
 def add_gig(request):
-    return render(request, "stats/add_gig.html")
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        gig = Gig.objects.create(
+            event_date=data.get('date'),
+            artist_name=data.get('artist'),
+            venue=data.get('venue'),
+            city=data.get('city'),
+            country=data.get('country'),
+        )
+        gig.attendees.add(request.user.profile)
+
+        return JsonResponse({'status': 'success', 'gig_id': gig.id})
+
+    return JsonResponse({'status': 'error'}, status=400)
 
 @login_required
 def import_setlistfm(request):
@@ -234,4 +249,31 @@ def import_setlistfm(request):
             gig.attendees.add(profile)
 
     return redirect("my_gigs")
+
+@login_required
+def edit_gig(request, gig_id):
+    gig = get_object_or_404(Gig, id=gig_id)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "delete":
+            gig.delete()
+            return JsonResponse({"success": True, "deleted": True})
+
+        gig.artist_name = request.POST.get("artist_name", gig.artist_name)
+        gig.venue = request.POST.get("venue", gig.venue)
+        gig.city = request.POST.get("city", gig.city)
+        gig.country = request.POST.get("country", gig.country)
+
+        date_str = request.POST.get("event_date")
+        if date_str:
+            try:
+                gig.event_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                pass
+
+        gig.save()
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"success": False, "error": "Invalid request"})
 
