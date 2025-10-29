@@ -1,4 +1,5 @@
 import os
+import random
 import requests
 import json
 
@@ -113,7 +114,7 @@ def genre_cloud(request):
     for artist in data.get("items", []):
         genres.extend(artist.get("genres", []))
 
-    counter = Counter(genres).most_common(50)  # list of (genre, count)
+    counter = Counter(genres).most_common(55)  # list of (genre, count)
 
     # Size normalization in px range
     min_size, max_size = 12, 42
@@ -127,10 +128,14 @@ def genre_cloud(request):
             else:
                 # linear normalization
                 size = int(min_size + (cnt - min_c) * (max_size - min_size) / (max_c - min_c))
-            genres_with_size.append({"name": genre, "count": cnt, "size": size})
+            genres_with_size.append({"name": genre,
+                                     "count": cnt,
+                                     "size": size,
+                                     "opacity": round(random.uniform(0.7, 1.0), 2)})
     # if empty, genres_with_size is left empty
-
-    return render(request, "stats/genre_cloud.html", {"genres": genres_with_size})
+    random.shuffle(genres_with_size)
+    return render(request, "stats/genre_cloud.html",
+                  {"genres": genres_with_size})
 
 @login_required
 def profile_view(request):

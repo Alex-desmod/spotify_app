@@ -84,6 +84,28 @@ main {
     }
 }
 
+.genre-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.genre-word {
+    font-weight: 600;
+    white-space: nowrap;
+    user-select: none;
+    transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
+
+.genre-word:hover {
+    transform: scale(1.2);
+    color: #fff;
+    opacity: 1;
+}
+
 /* Footer */
 footer {
     background-color: #1e1e1e;

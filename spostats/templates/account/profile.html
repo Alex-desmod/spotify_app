@@ -10,7 +10,7 @@
 
         <div class="mt-3">
             {% if user.has_usable_password %}
-                <a href="{% url 'account_change_password' %}" class="btn btn-custom">Change password</a>
+                <a href="{% url 'account_change_password' %}" class="btn btn-custom">change password</a>
             {% else %}
                 <a href="{% url 'account_set_password' %}" class="btn btn-custom">Set password</a>
             {% endif %}
