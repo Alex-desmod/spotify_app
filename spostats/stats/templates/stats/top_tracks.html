@@ -1,5 +1,5 @@
 {% extends "stats/base.html" %}
-
+{% load static %}
 {% block title %}Top Tracks{% endblock %}
 
 {% block content %}
@@ -33,7 +33,7 @@
     {% if items|length > 10 %}
         <button class="btn btn-custom" data-bs-target="#moreTracks" data-bs-toggle="collapse" data-toggle-button
                 type="button">
-            more
+            <img src="{% static 'images/icons/unfold.svg' %}" alt="unfold" width="40">
         </button>
 
         <div class="collapse mt-3" id="moreTracks">

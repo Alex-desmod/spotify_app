@@ -44,6 +44,11 @@ main {
     background-color: #1e1e1e;
     color: #fff;
     border: 1px solid #444;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-custom:hover {

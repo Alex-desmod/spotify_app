@@ -1,4 +1,5 @@
 {% extends "stats/base.html" %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
@@ -16,7 +17,9 @@
         </div>
 
         <div class="mt-3">
-            <a href="{% url 'account_logout' %}" class="btn btn-outline-light">Logout</a>
+            <a href="{% url 'account_logout' %}" class="btn btn-custom">
+                <img src="{% static 'images/icons/logout.svg' %}" alt="logout" width="25">
+            </a>
         </div>
     </div>
 </div>

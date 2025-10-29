@@ -1,5 +1,5 @@
 {% extends "stats/base.html" %}
-
+{% load static %}
 {% block title %}My Gigs{% endblock %}
 
 {% block content %}
@@ -7,7 +7,7 @@
 
 <div class="mb-4">
     <button type="button" class="btn btn-custom mb-3" data-bs-toggle="modal" data-bs-target="#addGigModal">
-        add manually
+        <img src="{% static 'images/icons/plus.svg' %}" alt="add" width="25">
     </button>
     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#setlistfmModal">
         import from Setlist.fm
@@ -30,8 +30,8 @@
 
             <div class="col-3 text-end">
                 {% if gig.url %}
-                    <a href="{{ gig.url }}" class="btn btn-outline-light btn-sm" target="_blank">
-                        view on Setlist.fm
+                    <a href="{{ gig.url }}" class="btn btn-custom" target="_blank">
+                        <small>view on Setlist.fm</small>
                     </a>
                 {% endif %}
                 <button
@@ -45,7 +45,7 @@
                     data-country="{{ gig.country }}"
                     data-date="{{ gig.event_date|date:'Y-m-d' }}"
                 >
-                    edit
+                    <img src="{% static 'images/icons/edit.svg' %}" alt="edit" width="25">
                 </button>
             </div>
         </li>
@@ -58,7 +58,7 @@
 {% if gigs|length > 10 %}
     <button class="btn btn-custom" data-bs-target="#moreGigs" data-bs-toggle="collapse" data-toggle-button
                 type="button">
-        more
+        <img src="{% static 'images/icons/unfold.svg' %}" alt="unfold" width="40">
     </button>
 
     <div class="collapse mt-3" id="moreGigs">
@@ -77,8 +77,8 @@
 
                     <div class="col-3 text-end">
                         {% if gig.url %}
-                            <a href="{{ gig.url }}" class="btn btn-outline-light btn-sm" target="_blank">
-                            View on Setlist.fm
+                            <a href="{{ gig.url }}" class="btn btn-custom" target="_blank">
+                                <small>view on Setlist.fm</small>
                             </a>
                         {% endif %}
                         <button
@@ -92,7 +92,7 @@
                             data-country="{{ gig.country }}"
                             data-date="{{ gig.event_date|date:'Y-m-d' }}"
                         >
-                        edit
+                            <img src="{% static 'images/icons/edit.svg' %}" alt="edit" width="25">
                         </button>
                     </div>
                 </li>
@@ -121,7 +121,9 @@
                         <label for="setlistfm_username" class="form-label">Setlist.fm username</label>
                         <input type="text" class="form-control" id="setlistfm_username" name="setlistfm_username" required>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Submit</button>
+                    <button type="submit" class="btn btn-success w-100">
+                        <img src="{% static 'images/icons/save.svg' %}" alt="save" width="25">
+                    </button>
                 </form>
             </div>
         </div>
@@ -168,8 +170,12 @@
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-success">Save</button>
-                        <button type="button" id="deleteGig" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-success">
+                            <img src="{% static 'images/icons/save.svg' %}" alt="save" width="25">
+                        </button>
+                        <button type="button" id="deleteGig" class="btn btn-danger">
+                            <img src="{% static 'images/icons/delete.svg' %}" alt="delete" width="25">
+                        </button>
                     </div>
                 </form>
             </div>
@@ -215,7 +221,9 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
-                <button type="submit" class="btn btn-success">add gig</button>
+                <button type="submit" class="btn btn-success">
+                    <img src="{% static 'images/icons/save.svg' %}" alt="save" width="25">
+                </button>
             </div>
             </form>
         </div>

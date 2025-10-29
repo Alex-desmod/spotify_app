@@ -1,5 +1,6 @@
 {% extends "stats/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
@@ -8,7 +9,9 @@
         <p>Are you sure you want to log out?</p>
         <form method="post" action="{% url 'account_logout' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-custom">Log out</button>
+            <button type="submit" class="btn btn-custom">
+                <img src="{% static 'images/icons/logout.svg' %}" alt="logout" width="25">
+            </button>
         </form>
     </div>
 </div>

@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (target) {
             target.addEventListener("shown.bs.collapse", () => {
-                button.textContent = "less";
+                button.innerHTML = `<img src="/static/images/icons/fold.svg" alt="less" width="40">`;
             });
 
             target.addEventListener("hidden.bs.collapse", () => {
-                button.textContent = "more";
+                button.innerHTML = `<img src="/static/images/icons/unfold.svg" alt="more" width="40">`;
             });
         }
     });

@@ -1,5 +1,6 @@
 {% extends "stats/base.html" %}
 {% load socialaccount %}  {# for {% provider_login_url %} #}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
@@ -9,7 +10,7 @@
         <!-- Spotify button -->
         <div class="social-login mb-4 text-center">
             <a href="{% provider_login_url 'spotify' %}" class="btn btn-success w-100">
-                Continue with Spotify
+                continue with Spotify
             </a>
         </div>
 
@@ -17,7 +18,9 @@
         <form method="post" action="{% url 'account_login' %}">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-custom w-100">Log in</button>
+            <button type="submit" class="btn btn-custom w-100">
+                <img src="{% static 'images/icons/login.svg' %}" alt="login" width="25">
+            </button>
         </form>
 
         <div class="mt-3">
