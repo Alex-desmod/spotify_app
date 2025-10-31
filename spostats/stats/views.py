@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SETLISTFM_API_KEY = os.getenv("SETLISTFM_API_KEY")
+MAX_GIGS_PER_USER = 1001 # gig limit for a user
 
 def _top_items(request, item_type="tracks"):
     client = SpotifyClient(request.user)
@@ -165,6 +166,16 @@ def my_gigs(request):
 @login_required
 def add_gig(request):
     if request.method == 'POST':
+        user_profile = request.user.profile
+
+        # Check up how many gigs the user has
+        user_gig_count = user_profile.gigs.count()
+        if user_gig_count >= MAX_GIGS_PER_USER:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'You have reached the limit of {MAX_GIGS_PER_USER} gigs.'
+            }, status=403)
+
         data = json.loads(request.body)
 
         gig = Gig.objects.create(

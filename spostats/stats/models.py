@@ -34,6 +34,9 @@ class Gig(models.Model):
     # many-to-many
     attendees = models.ManyToManyField(Profile, related_name="gigs", blank=True)
 
+    def __str__(self):
+        return f'{self.event_date} {self.artist_name}'
+
     class Meta:
         ordering = ["-event_date"]
         verbose_name = "Gig"
