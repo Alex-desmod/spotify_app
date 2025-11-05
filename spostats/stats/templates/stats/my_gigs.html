@@ -58,10 +58,15 @@
 
 <!-- Show More/Less button -->
 {% if gigs|length > 10 %}
-    <button class="btn btn-custom" data-bs-target="#moreGigs" data-bs-toggle="collapse" data-toggle-button
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-custom" data-bs-target="#moreGigs" data-bs-toggle="collapse" data-toggle-button
                 type="button">
-        <img src="{% static 'images/icons/unfold.svg' %}" alt="unfold" width="40">
-    </button>
+            <img src="{% static 'images/icons/unfold.svg' %}" alt="unfold" width="40">
+        </button>
+        <a href="{% url 'most_seen' %}" class="btn btn-custom">
+            <span>the most seen</span>
+        </a>
+    </div>
 
     <div class="collapse mt-3" id="moreGigs">
         <ul class="list-group list-group-flush">

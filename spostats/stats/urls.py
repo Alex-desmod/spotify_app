@@ -3,13 +3,14 @@ from . import views
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
-    path('setup-connection/', views.spotify_setup, name='spotify_setup'),
+    path("setup-connection/", views.spotify_setup, name='spotify_setup'),
     path("top-tracks/", views.top_tracks, name="top_tracks"),
     path("top-artists/", views.top_artists, name="top_artists"),
     path("my-gigs/", views.my_gigs, name="my_gigs"),
     path("my-gigs/import-setlistfm/", views.import_setlistfm, name="import_setlistfm"),
     path('my-gigs/add/', views.add_gig, name='add_gig'),
     path("my-gigs/<int:gig_id>/edit/", views.edit_gig, name="edit_gig"),
+    path("my-gigs/most-seen/", views.most_seen, name="most_seen"),
     path("genre-cloud/", views.genre_cloud, name="genre_cloud"),
     path("profile/", views.profile_view, name="account_profile"),
     path("artist/<str:artist_id>/", views.artist_detail, name="artist_detail"),

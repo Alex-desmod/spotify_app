@@ -1,9 +1,11 @@
 import os
 import random
+
 import requests
 import json
 
 from allauth.socialaccount.models import SocialAccount
+from django.db.models import Count, Max
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -293,4 +295,18 @@ def edit_gig(request, gig_id):
         return JsonResponse({"success": True})
 
     return JsonResponse({"success": False, "error": "Invalid request"})
+
+@login_required
+def most_seen(request):
+    profile = request.user.profile
+
+    top_seen = (
+        profile.gigs.values("artist_name")
+        .annotate(
+            count=Count("id"),
+            last_date=Max("event_date")
+        )
+        .order_by("-count", "-last_date")[:10]
+    )
+    return render(request, "stats/most_seen.html", {"top_seen": top_seen})
 
