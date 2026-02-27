@@ -113,3 +113,17 @@ footer {
     text-align: center;
     padding: 1rem 0;
 }
+
+.header {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.header div {
+    width: 100%;
+}
+
+.header img {
+    width: 100%;
+}
