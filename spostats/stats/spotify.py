@@ -1,12 +1,16 @@
-import time
 from datetime import timedelta
 import requests
 from django.utils import timezone
-from django.conf import settings
 from allauth.socialaccount.models import SocialAccount, SocialToken, SocialApp
 
 SPOTIFY_API = "https://api.spotify.com/v1"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
+
+
+class SpotifyTokenExpired(Exception):
+    """Raised when the Spotify refresh token has expired (invalid_grant) and re-auth is needed."""
+    pass
+
 
 class SpotifyClient:
     def __init__(self, user):
@@ -32,8 +36,7 @@ class SpotifyClient:
 
     def _refresh_token(self):
         app = SocialApp.objects.get(provider="spotify")
-        # refresh_token may be saved in token.token_secret or in token.extra_data — we'll check both
-        refresh_token = getattr(self.token, "token_secret", None) or (self.token.token_secret) \
+        refresh_token = self.token.token_secret \
                         or (self.token.extra_data or {}).get("refresh_token")
         if not refresh_token:
             return  # the first login could not return a refresh_token
@@ -44,7 +47,18 @@ class SpotifyClient:
             "client_secret": app.secret,
         }
         r = requests.post(SPOTIFY_TOKEN_URL, data=data, timeout=10)
+
+        if r.status_code == 400:
+            error = r.json().get("error")
+            if error == "invalid_grant":
+                self._discard_token()
+                raise SpotifyTokenExpired(
+                    "Spotify refresh token has expired. User must re-authorize."
+                )
+            r.raise_for_status()
+
         r.raise_for_status()
+
         payload = r.json()
         self.token.token = payload["access_token"]
         # Spotify may return a new refresh_token — save it
@@ -54,6 +68,11 @@ class SpotifyClient:
             self.token.expires_at = timezone.now() + timedelta(seconds=payload["expires_in"])
         self.token.save()
 
+    def _discard_token(self):
+        if self.token:
+            self.token.delete()
+            self.token = None
+
     def _headers(self):
         self._ensure_token()
         return {"Authorization": f"Bearer {self.token.token}"}
@@ -61,13 +80,11 @@ class SpotifyClient:
     def get(self, path, params=None):
         r = requests.get(f"{SPOTIFY_API}{path}", headers=self._headers(), params=params or {}, timeout=15)
         if r.status_code == 401:
-            # just in case - we try to update one more time and repeat
             self._refresh_token()
             r = requests.get(f"{SPOTIFY_API}{path}", headers=self._headers(), params=params or {}, timeout=15)
         r.raise_for_status()
         return r.json()
 
-    # Useful methods:
     def me(self):
         return self.get("/me")
 

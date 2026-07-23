@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 
 from .models import Gig
-from .spotify import SpotifyClient
+from .spotify import SpotifyClient, SpotifyTokenExpired
 from .forms import ProfileForm
 
 from datetime import datetime
@@ -33,8 +33,10 @@ def _top_items(request, item_type="tracks"):
 
     try:
         data = client.top_items(item_type=item_type, time_range=time_range, limit=50)
+    except SpotifyTokenExpired:
+        return redirect("/accounts/social/login/spotify/")
     except Exception:
-        return redirect("account_login")
+        return render(request, f"stats/top_{item_type}.html", {"item_type": item_type, "time_range": time_range, "items": [], "error": "Failed to load Spotify data."})
 
     items = []
     for obj in data.get("items", []):
@@ -79,9 +81,10 @@ def dashboard(request):
 
     try:
         data = client.recently_played(limit=50)
+    except SpotifyTokenExpired:
+        return redirect("/accounts/social/login/spotify/")
     except Exception:
-        # if something's wrong (for example the token is lost) → redirect to login
-        return redirect("account_login")
+        return render(request, "stats/dashboard.html", {"error": "Failed to load Spotify data. Please reconnect your Spotify account.", "recent_tracks": []})
 
     recent_tracks = []
     for item in data.get("items", []):
@@ -110,8 +113,10 @@ def genre_cloud(request):
 
     try:
         data = client.top_items(item_type="artists", time_range="medium_term", limit=50)
+    except SpotifyTokenExpired:
+        return redirect("/accounts/social/login/spotify/")
     except Exception:
-        return redirect("account_login")
+        return render(request, "stats/genre_cloud.html", {"genres": [], "error": "Failed to load Spotify data."})
 
     genres = []
     for artist in data.get("items", []):
