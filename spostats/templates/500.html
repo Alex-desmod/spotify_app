@@ -1,0 +1,14 @@
+{% extends "stats/base.html" %}
+{% load static %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="text-center" style="background-color: #f6f5f4; min-height: 100vh;">
+    <h1 class="display-1 pt-5" style="font-family: 'Rodchenko', sans-serif; font-weight: 300; color: #121212;">500</h1>
+    <p class="lead" style="color: #555;">Internal server error.</p>
+    <div class="mt-4">
+        <img src="{% static 'images/cobain.png' %}" alt="500" class="img-fluid" style="max-height: 400px;">
+    </div>
+</div>
+{% endblock %}

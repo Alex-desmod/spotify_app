@@ -1,3 +1,19 @@
+@font-face {
+    font-family: 'Manrope';
+    src: url('../fonts/Manrope.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rodchenko';
+    src: url('../fonts/Rodchenko-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -9,6 +25,7 @@ html, body {
 
 body {
     min-height: 100vh;
+    font-family: 'Manrope', sans-serif;
 }
 
 .container-fluid {
